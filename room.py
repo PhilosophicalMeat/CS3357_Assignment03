@@ -139,7 +139,7 @@ def process_message(message, addr):
         else:
             return "Invalid command"
 
-    # If player drops an item, put in in the list of things here.
+    # If player drops an item, put it in the list of things here.
 
     elif (words[0] == 'drop'):
         if (len(words) == 2):
