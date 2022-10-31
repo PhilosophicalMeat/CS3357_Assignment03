@@ -2,7 +2,7 @@ import socket
 import signal
 import sys
 import argparse
-
+from urllib.parse import urlparse
 # Saved information on the room.
 
 name = ''
@@ -10,7 +10,7 @@ description = ''
 items = []
 
 # Connection order: NORTH, SOUTH, EAST, WEST, UP, DOWN
-connections = [("", "", ""), ("", "", ""), ("", "", ""), ("", "", ""), ("", "", ""), ("", "", "")]
+connections = [("", "", 0), ("", "", 0), ("", "", 0), ("", "", 0), ("", "", 0), ("", "", 0)]
 
 # List of clients currently in the room.
 
@@ -148,6 +148,15 @@ def process_message(message, addr):
         else:
             return "Invalid command"
 
+    # If player says something to rest of server, check message and send to other players
+    elif (words[0] == 'say'):
+        print("cringe")
+
+
+    # If player wishes to move to any adjacent rooms, check if the room exists and return appropriate response
+    elif words[0] == 'north':
+        print("MORE cringe")
+
     # Otherwise, the command is bad.
 
     else:
@@ -171,12 +180,12 @@ def main():
     # NEW CODE for parsing optional arguments
     # subparser = parser.add_subparsers()
     # Parsing optional arguments
-    parser.add_argument("-s", type=str, nargs=2)
-    parser.add_argument("-n", type=str, nargs=2)
-    parser.add_argument("-e", type=str, nargs=2)
-    parser.add_argument("-w", type=str, nargs=2)
-    parser.add_argument("-u", type=str, nargs=2)
-    parser.add_argument("-d", type=str, nargs=2)
+    parser.add_argument("-s", type=str, nargs=1)
+    parser.add_argument("-n", type=str, nargs=1)
+    parser.add_argument("-e", type=str, nargs=1)
+    parser.add_argument("-w", type=str, nargs=1)
+    parser.add_argument("-u", type=str, nargs=1)
+    parser.add_argument("-d", type=str, nargs=1)
     # Parsing arguments necessary for server launch
     parser.add_argument("port", type=int, help="port number to list on")
     parser.add_argument("name", help="name of the room")
@@ -190,17 +199,23 @@ def main():
 
     # Updating connections list
     if args.n:
-        connections[0] = ("north", args.n[0], args.n[1])
+        server_addr = urlparse(args.n[0])
+        connections[0] = ("north", str(server_addr.hostname), server_addr.port)
     if args.s:
-        connections[1] = ("south", args.s[0], args.s[1])
+        server_addr = urlparse(args.s[0])
+        connections[1] = ("south", str(server_addr.hostname), server_addr.port)
     if args.e:
-        connections[2] = ("east", args.e[0], args.e[1])
+        server_addr = urlparse(args.e[0])
+        connections[2] = ("east", str(server_addr.hostname), server_addr.port)
     if args.w:
-        connections[3] = ("west", args.w[0], args.w[1])
+        server_addr = urlparse(args.w[0])
+        connections[3] = ("west", str(server_addr.hostname), server_addr.port)
     if args.u:
-        connections[4] = ("up", args.u[0], args.u[1])
+        server_addr = urlparse(args.u[0])
+        connections[4] = ("up", str(server_addr.hostname), server_addr.port)
     if args.d:
-        connections[5] = ("down", args.d[0], args.d[1])
+        server_addr = urlparse(args.d[0])
+        connections[5] = ("down", str(server_addr.hostname), server_addr.port)
 
     # Report initial room state.
     print('Room Starting Description:\n')
